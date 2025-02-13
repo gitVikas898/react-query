@@ -269,6 +269,22 @@
         "english",
         "fiction"
       ]
+    },
+    {
+      "id": 6,
+      "title": "New Post 3",
+      "tags": [
+        "classic",
+        "crime"
+      ]
+    },
+    {
+      "id": 6,
+      "title": "New Post 5 ",
+      "tags": [
+        "fiction",
+        "french"
+      ]
     }
   ],
   "tags": [

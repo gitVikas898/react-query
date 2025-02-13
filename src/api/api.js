@@ -1,5 +1,5 @@
-export const fetchPost = async()=>{
-    const data = await fetch("http://localhost:3000/posts");
+export const fetchPost = async(page)=>{
+    const data = await fetch(`http://localhost:3000/posts?_sort=-id&${page ? `_page=${page}&_per_page=5`:""}`);
     const response = await data.json();
     return response;
 }

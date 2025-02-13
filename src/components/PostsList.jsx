@@ -1,13 +1,17 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { addPost, fetchPost, fetchTags } from '../api/api'
+import { useState } from 'react'
 const PostsList = () => {
 
+    const [page,setPage] = useState(1);
+
     const {data:postData,isLoading} = useQuery({
-        queryKey:["posts"],
-        queryFn:fetchPost,
-        gcTime:0,
-        refetchInterval:1000*5,
+        queryKey:["posts",{page}],
+        queryFn:()=>fetchPost(page),
+        staleTime:1000*5*60,
+        // gcTime:0,
+        // refetchInterval:1000*5,
       })
 
 
@@ -50,7 +54,7 @@ const PostsList = () => {
             return 
         }
 
-        mutate({id:postData.length+1,title,tags});
+        mutate({id:postData?.data?.length+1,title,tags});
         e.target.reset()
       }
 
@@ -72,7 +76,18 @@ const PostsList = () => {
             </div>
             <button>Post</button>
         </form>
-       {postData?.map((post)=>(
+
+        <div className='pages'>
+            <button onClick={()=>setPage((oldPage)=>Math.max(oldPage-1,0))}
+                disabled={!postData?.prev}
+                >Previous</button>
+            <span>Current Page:{page}</span>
+            <button onClick={()=>setPage((oldPage)=>oldPage+1)}
+                 disabled={!postData?.next}
+                >next</button>
+        </div>
+
+       {postData?.data?.map((post)=>(
         <div key={post.id} className='post'>
             {post.title}
            {post.tags.map((tag)=>(
