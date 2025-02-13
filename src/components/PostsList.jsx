@@ -1,21 +1,34 @@
 
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { addPost, fetchPost, fetchTags } from '../api/api'
 const PostsList = () => {
 
     const {data:postData,isLoading} = useQuery({
         queryKey:["posts"],
-        queryFn:fetchPost
+        queryFn:fetchPost,
+        gcTime:0,
+        refetchInterval:1000*5,
       })
 
 
       const {data:tagData} = useQuery({
         queryKey:["tags"],
-        queryFn:fetchTags
+        queryFn:fetchTags,
+        staleTime:Infinity,
       })
+
+      const queryClient = useQueryClient()
 
     const {mutate} = useMutation({
         mutationFn:addPost,
+        onMutate:()=>{
+            return {id:1}
+        },
+        onSuccess: (data,variables,context)=>{
+           queryClient.invalidateQueries({
+            queryKey:["posts"]
+           })
+        }
      })
 
       if(isLoading){
@@ -32,6 +45,13 @@ const PostsList = () => {
         const title = formData.get("title");
         const tags = Array.from(formData.keys()).filter((key)=>formData.get(key)==="on");
         console.log(title +":"+ tags);
+
+        if(!title || !tags){
+            return 
+        }
+
+        mutate({id:postData.length+1,title,tags});
+        e.target.reset()
       }
 
   return (
